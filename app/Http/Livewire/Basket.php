@@ -6,13 +6,16 @@ use Livewire\Component;
 
 class Basket extends Component
 {
-    public $userProducts;
+    public $basketProducts;
+    public $basket;
 
     protected $listeners = ['refreshParentComponent' => '$refresh'];
 
     public function mount()
     {
-        $this->userProducts = auth()->user()->basketProducts()->get();
+        $this->basket = auth()->user()->basket()->first();
+
+        $this->basketProducts = $this->basket->BasketProducts;
     }
 
     public function render()

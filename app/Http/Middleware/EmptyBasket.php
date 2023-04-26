@@ -15,7 +15,9 @@ class EmptyBasket
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $basketProductsCount = auth()->user()->basketProducts()->count();
+        $basket = auth()->user()->basket;
+
+        $basketProductsCount = $basket->basketProducts()->count();
 
         if ($basketProductsCount === 0) {
             abort(400);

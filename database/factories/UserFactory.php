@@ -38,15 +38,4 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
-
-    public function configure()
-    {
-        return $this->afterCreating(function (User $user) {
-            Basket::create([
-                'user_id' => $user->id,
-                'product_id' => Product::inRandomOrder()->first()->id,
-                'quantity' => fake()->numberBetween(1,10)
-            ]);
-        });
-    }
 }

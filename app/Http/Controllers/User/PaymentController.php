@@ -29,7 +29,6 @@ class PaymentController extends Controller
 
         $data = $result->getData();
 
-        dd($result, $result->isApproved(), );
         Order::whereId($data['order_id'])->update([
             'status' => $request->input('order_status')
         ]);

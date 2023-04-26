@@ -25,41 +25,27 @@ class OrderController extends Controller
 
     public function store(FondyPaymentService $service)
     {
-        $userProducts = auth()->user()->basketProducts()->get();
-
-        if ($userProducts->count() === 0) {
-            return redirect()->route('user.basket.index');
-        };
-
-        $order = auth()->user()->orders()->create([
-            'id' => uuid_create(),
-        ]);
-
-        $orderTotal = 0;
-
-        foreach($userProducts as $userProduct){
-            if ($userProduct->product->countryPrice()->count() === 1) {
-                $productTotal = $userProduct->product->countryPrice[0]->price * $userProduct->quantity;
-
-                $orderTotal += $productTotal;
-
-                $order->orderProducts()->create([
-                    'product_id' => $userProduct->product->id,
-                    'quantity' => $userProduct->quantity,
-                    'total' => $productTotal
-                ]);
-            }
-        }
-
-        $order->total = $orderTotal;
-
-        $order->save();
-
         $currency = Currency::where('locale', app()->getLocale())->select('code')->first();
 
-        $url = $service->checkout($orderTotal * 100, $currency->code, $order->id);
+        if (! isset($currency)) {
+            return redirect()->route('user.basket.index');
+        }
 
-        auth()->user()->basketProducts()->delete();
+        $basket = auth()->user()->basket()->first();
+
+        $order = auth()->user()->orders()->create([
+            'total' => $basket->total
+        ]);
+
+        $url = $service->checkout($basket->total * 100, $currency->code, $order->id);
+
+        if ($url->getData()['response_status'] !== 'success') {
+            return redirect()->route('user.basket.index');
+        }
+
+        $basketProducts = $basket->basketProducts()->get()->toArray();
+
+        $order->orderProducts()->createMany($basketProducts);
 
         $url->toCheckout();
     }

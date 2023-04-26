@@ -6,30 +6,61 @@ use Livewire\Component;
 
 class BasketItem extends Component
 {
-    public $userProduct;
+    public $basket;
 
-    public function mount($userProduct)
+    public $basketProduct;
+
+    public function mount($basketProduct, $basket)
     {
-        $this->userProduct = $userProduct;
+        $this->basketProduct = $basketProduct;
+
+        $this->basket = $basket;
+    }
+
+    private function updateBasketTotal()
+    {
+        $this->basket->total = $this->basket->basketProducts()
+        ->selectRaw('SUM(total) AS basket_total')
+        ->first()->basket_total;
+
+        $this->basket->save();
     }
 
     public function increment()
     {
-        $this->userProduct->increment('quantity', 1);
+        $this->basketProduct->increment('quantity', 1);
+
+        $productPrice = $this->basketProduct->product->defaultPrice()->first()->price;
+
+        $this->basketProduct->total = $productPrice * $this->basketProduct->quantity;
+
+        $this->basketProduct->save();
+
+        $this->updateBasketTotal();
     }
 
     public function decrement()
     {
-        $this->userProduct->decrement('quantity', 1);
+        $this->basketProduct->decrement('quantity', 1);
 
-        if ($this->userProduct->quantity <= 0) {
+        if ($this->basketProduct->quantity <= 0) {
             $this->remove();
         }
+
+        $productPrice = $this->basketProduct->product->defaultPrice()->first()->price;
+
+        $this->basketProduct->total = $productPrice * $this->basketProduct->quantity;
+
+        $this->basketProduct->save();
+
+        $this->updateBasketTotal();
     }
 
     public function remove()
     {
-        $this->userProduct->delete();
+        $this->basketProduct->delete();
+
+        $this->updateBasketTotal();
 
         $this->emitUp('refreshParentComponent');
     }

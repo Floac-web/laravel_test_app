@@ -86,7 +86,7 @@ return [
 
     'default_locale' => 'uk',
 
-    'support_langs' => ['uk', 'en', 'pl'],
+    'support_langs' => ['uk_UA', 'en_EN', 'pl_PL'],
 
     /*
     |--------------------------------------------------------------------------

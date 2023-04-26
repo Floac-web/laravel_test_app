@@ -3,9 +3,9 @@
     <hr>
 
 
-        @if(isset($userProducts) && $userProducts->count() > 0)
-            @foreach ($userProducts as $userProduct)
-            @livewire('basket-item', ['userProduct' => $userProduct], key($userProduct->id))
+        @if(isset($basketProducts) && $basketProducts->count() > 0)
+            @foreach ($basketProducts as $basketProduct)
+            @livewire('basket-item', compact('basketProduct', 'basket'), key($basketProduct->id))
             @endforeach
             @livewire('user.order.form') <br>
         @else

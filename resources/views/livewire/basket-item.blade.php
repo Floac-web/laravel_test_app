@@ -1,14 +1,14 @@
 <div>
-    {{ $userProduct->product->countryPrices()->first()->price }}
-     <div id="{{ $userProduct->id }}">
-        <a href="{{ route('products.show', $userProduct->product) }}">
-        <h4>{{ $userProduct->product->translateOrDefault(app()->getLocale())->title }}</h4>
+    {{ $basketProduct->product->countryPrices()->first()->price }}
+     <div id="{{ $basketProduct->id }}">
+        <a href="{{ route('products.show', $basketProduct->product) }}">
+        <h4>{{ $basketProduct->product->translateOrDefault(app()->getLocale())->title }}</h4>
         </a>
-        <strong>{{ $userProduct->product->countryPrices()->first()->price * $userProduct->quantity }}</strong>
+        <strong>{{ $basketProduct->product->countryPrices()->first()->price * $basketProduct->quantity }}</strong>
         <div>
-            <p>Count: {{ $userProduct->quantity }}</p>
+            <p>Count: {{ $basketProduct->quantity }}</p>
         </div>
-        <div>{{$userProduct->product->id}}</div>
+        <div>{{$basketProduct->product->id}}</div>
         <button wire:click="increment">+</button>
         <button wire:click="decrement">-</button>
         <button wire:click="remove">remove</button>

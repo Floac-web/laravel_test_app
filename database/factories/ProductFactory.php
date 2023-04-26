@@ -33,8 +33,8 @@ class ProductFactory extends Factory
                 $faker = Faker::create("$lang");
                 $product->translations()->create([
                     'locale' => mb_substr($lang, 0, 2),
-                    'title' => $faker->name(),
-                    'description' => $faker->sentence(),
+                    'title' => $faker->realText(100),
+                    'description' => $faker->realText(500),
                 ]);
 
                 ProductCountryPrice::create([
@@ -48,6 +48,8 @@ class ProductFactory extends Factory
                 'product_id' => $product->id,
                 'category_id' => Category::inRandomOrder()->first()->id
             ]);
+
+            gc_collect_cycles();
         });
     }
 }

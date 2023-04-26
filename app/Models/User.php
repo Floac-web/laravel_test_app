@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -42,9 +43,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function basketProducts()
+    public static function boot()
     {
-        return $this->hasMany(Basket::class)->with('products');
+        parent::boot();
+
+        self::created(function ($model) {
+            Basket::create([
+                'user_id' => $model->id
+            ]);
+        });
+    }
+
+    public function basket()
+    {
+        return $this->hasOne(Basket::class)->with('basketProducts');
     }
 
     public function orders()

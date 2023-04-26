@@ -13,7 +13,7 @@ class BasketController extends Controller
 {
     public function index()
     {
-        $userProducts = auth()->user()->basketProducts()->paginate(5);
+        $userProducts = auth()->user()->basket()->get();
 
         return view('user.basket.index', compact('userProducts'));
     }
