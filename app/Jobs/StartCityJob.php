@@ -10,21 +10,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 
-class CitiesJob implements ShouldQueue
+class StartCityJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $page;
-    public $per_page;
     /**
      * Create a new job instance.
      */
-    public function __construct($page, $per_page)
+    public function __construct()
     {
-        $this->page = $page;
-        $this->per_page = $per_page;
+        //
     }
 
     /**
@@ -32,10 +28,10 @@ class CitiesJob implements ShouldQueue
      */
     public function handle(NovaPoshtaService $service): void
     {
-        $cities = $service->getCities($this->page, $this->per_page);
+        $cityCount = $service->getCities(1,0)['info']['totalCount'];
 
-        if ($cities) {
-            $service->updateCities($cities['data']);
+        for ($page = 1; $page < ($cityCount/ City::PER_PAGE) + 1; $page++) {
+            dispatch(new CitiesJob($page, City::PER_PAGE));
         }
     }
 }

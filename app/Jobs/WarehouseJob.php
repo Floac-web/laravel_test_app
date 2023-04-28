@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\City;
+use App\Models\CityWarehouse;
 use App\Services\NovaPoshtaService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -12,12 +12,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 
-class CitiesJob implements ShouldQueue
+class WarehouseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $page;
     public $per_page;
+
     /**
      * Create a new job instance.
      */
@@ -32,10 +33,10 @@ class CitiesJob implements ShouldQueue
      */
     public function handle(NovaPoshtaService $service): void
     {
-        $cities = $service->getCities($this->page, $this->per_page);
+        $wareHouses = $service->getWareHouses($this->page, $this->per_page);
 
-        if ($cities) {
-            $service->updateCities($cities['data']);
+        if ($wareHouses) {
+            $service->updateWareHouses($wareHouses['data']);
         }
     }
 }

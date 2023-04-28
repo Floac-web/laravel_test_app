@@ -2,18 +2,19 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\WareHousesJob;
+use App\Jobs\StartWarehouseJob;
+use App\Jobs\WarehousesJob;
 use App\Models\CityWarehouse;
 use Illuminate\Console\Command;
 
-class WareHouses extends Command
+class Warehouses extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:ware-houses';
+    protected $signature = 'app:warehouses';
 
     /**
      * The console command description.
@@ -27,8 +28,6 @@ class WareHouses extends Command
      */
     public function handle(): void
     {
-        for ($page = 1; $page < (CityWarehouse::COUNT / CityWarehouse::PER_PAGE) + 1; $page++) {
-            dispatch(new WareHousesJob($page));
-        }
+        dispatch(new StartWarehouseJob());
     }
 }

@@ -20,7 +20,7 @@ class NovaPoshtaService
         return true;
     }
 
-    public function getCities($page)
+    public function getCities($page, $perPage)
     {
         $requestPayload = [
             "modelName" => "Address",
@@ -28,7 +28,7 @@ class NovaPoshtaService
             "methodProperties" => [
                 "Page" => "$page",
                 "Warehouse" => "1",
-                "Limit" => City::PER_PAGE
+                "Limit" => $perPage
             ]
         ];
 
@@ -43,17 +43,17 @@ class NovaPoshtaService
             return false;
         }
 
-        return $response['data'];
+        return $response;
     }
 
-    public function getWareHouses($page)
+    public function getWareHouses($page, $perPage)
     {
         $requestPayload = [
             "modelName" => "Address",
             "calledMethod" => "getWarehouses",
             "methodProperties" => [
                 "Page" => "$page",
-                "Limit" => CityWarehouse::PER_PAGE,
+                "Limit" => $perPage,
                 "Language" => "UA"
             ]
         ];
@@ -69,7 +69,7 @@ class NovaPoshtaService
             return false;
         }
 
-        return $response['data'];
+        return $response;
     }
 
     public function updateWareHouses($wareHouses)

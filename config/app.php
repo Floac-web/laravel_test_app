@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Facade;
 
 return [
 
+
+    'merchant_id' => env('MERCHANT_ID', 1396424),
+
+    'secret_key' => env('SECRET_KEY', 'test'),
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

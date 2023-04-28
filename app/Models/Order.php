@@ -37,4 +37,14 @@ class Order extends Model
     {
         return $this->hasMany(OrderProduct::class)->with('product');
     }
+
+    public function orderPayments()
+    {
+        return $this->hasMany(OrderPayment::class);
+    }
+
+    public function orderAddress()
+    {
+        return $this->hasMany(OrderAddress::class);
+    }
 }

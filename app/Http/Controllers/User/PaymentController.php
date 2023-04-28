@@ -3,40 +3,44 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaymentResponseRequest;
 use App\Models\Order;
+use App\Models\OrderAddress;
 use App\Models\OrderPayment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
 
-    public function success(Order $order, OrderPayment $orderPayment)
+    public function success(Order $order, OrderPayment $orderPayment, OrderAddress $orderAddress)
     {
         if ($order->user_id !== auth()->id()) {
             abort(404);
         }
 
-        return view('user.payment.success', compact('orderPayment'));
+        return view('user.payment.success', compact('orderPayment', 'orderAddress'));
     }
 
-    public function response(Request $request)
+    public function response(Request $request, Order $order)
     {
         $result = new \Cloudipsp\Result\Result($request->all(), 'test');
 
-        if (! $result->isApproved()) {
-            abort(429);
-        }
+        // if (! $result->isApproved()) {
+            // $order->delete();
+
+            // abort(402);
+        // }
 
         $data = $result->getData();
+        dd($data);
 
-        Order::whereId($data['order_id'])->update([
-            'status' => $request->input('order_status')
+        $merchantData = (array) json_decode($data['merchant_data']);
+
+        $order->updateOrCreate([
+            'status' => $request->input('order_status'),
         ]);
 
-        $order = $request->input('order_id');
-
-        $orderPayment = OrderPayment::create([
-            'order_id' => $request->input('order_id'),
+        $orderPayment = $order->orderPayments()->updateOrCreate([
             'payment_id' => $request->input('payment_id'),
             'currency' => $request->input('currency'),
             'amount' => $request->input('amount') / 100,
@@ -44,6 +48,8 @@ class PaymentController extends Controller
             'system' => $request->input('payment_system')
         ]);
 
-        return redirect()->route('payment.success', compact('order', 'orderPayment'));
+        $orderAddress = $order->orderAddress()->updateOrCreate($merchantData);
+
+        return redirect()->route('payment.success', compact('order', 'orderPayment', 'orderAddress'));
     }
 }

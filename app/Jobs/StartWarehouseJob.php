@@ -10,20 +10,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 
-class WareHousesJob implements ShouldQueue
+class StartWarehouseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public $page;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($page)
+    public function __construct()
     {
-        $this->page = $page;
+        //
     }
 
     /**
@@ -31,10 +28,10 @@ class WareHousesJob implements ShouldQueue
      */
     public function handle(NovaPoshtaService $service): void
     {
-        $wareHouses = $service->getWareHouses($this->page);
+        $warehouseCount = $service->getWareHouses(1,0)['info']['totalCount'];
 
-        if ($wareHouses) {
-            $service->updateWareHouses($wareHouses);
+        for ($page = 1; $page < ($warehouseCount / CityWarehouse::PER_PAGE) + 1; $page++) {
+            dispatch(new WarehouseJob($page, CityWarehouse::PER_PAGE));
         }
     }
 }

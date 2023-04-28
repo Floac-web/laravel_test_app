@@ -56,4 +56,4 @@ Route::prefix('currencies')
 
 Route::get('/novaposhta', [NovaPoshtaController::class, 'index'])->name('novaposhta');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\Web\HomeController::class, 'index'])->name('home');

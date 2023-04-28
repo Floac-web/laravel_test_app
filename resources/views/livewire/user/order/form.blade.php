@@ -9,10 +9,11 @@
         @endif
     </div>
 
-    @if (isset($city) && isset($warehouse))
-        <form action="{{ route('user.orders.store', [$city, $warehouse]) }}" method="POST">
-            @csrf
+    @if (isset($city) && isset($cityWarehouse))
+        <form wire:submit.prevent="order">
             <div>
+                <input type="text" wire:model='paymentType'>
+                @error('paymentType') <span style="color:red">{{ $message }}</span> @enderror
                 <button>
                     order
                 </button>

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\CitiesJob;
+use App\Jobs\StartCityJob;
 use App\Models\City;
 use Illuminate\Console\Command;
 
@@ -27,8 +28,6 @@ class Cities extends Command
      */
     public function handle(): void
     {
-        for ($page = 1; $page < (City::COUNT / City::PER_PAGE) + 1; $page++) {
-            dispatch(new CitiesJob($page));
-        }
+        dispatch(new StartCityJob());
     }
 }

@@ -2,5 +2,7 @@
 @section('content')
 
 <h1>Payment Succsess</h1>
-{{ $orderPayment }}
+{{ $orderPayment }}<br>
+{{ $orderAddress->city->name }}<br>
+{{ $orderAddress->cityWarehouse->address }}<br>
 @endsection

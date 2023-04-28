@@ -16,4 +16,4 @@ Route::resource('orders', UserOrderController::class, [
     'only' => ['index', 'show', 'destroy']
 ]);
 
-Route::middleware('empty.basket')->post('orders', [UserOrderController::class, 'store'])->name('orders.store');
+Route::middleware('empty.basket')->post('orders/{city}/{cityWarehouse}', [UserOrderController::class, 'store'])->name('orders.store');
