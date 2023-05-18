@@ -18,4 +18,10 @@ class CityWarehouse extends Model
     const COUNT = 23043;
 
     const PER_PAGE = 300;
+
+    public function city()
+    {
+        return $this->belongsTo(City::class,'city_ref', 'ref');
+    }
+
 }

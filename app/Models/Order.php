@@ -14,6 +14,7 @@ class Order extends Model
         'id',
         'status',
         'user_id',
+        'api',
         'total'
     ];
 

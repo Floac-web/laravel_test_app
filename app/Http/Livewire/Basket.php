@@ -2,20 +2,22 @@
 
 namespace App\Http\Livewire;
 
+use App\Services\BasketService;
 use Livewire\Component;
 
 class Basket extends Component
 {
-    public $basketProducts;
-    public $basket;
 
     protected $listeners = ['refreshParentComponent' => '$refresh'];
 
-    public function mount()
+    public function mount(BasketService $service)
     {
-        $this->basket = auth()->user()->basket()->first();
+        // dd($service, basket(), basket(), BasketService::class, session());
+    }
 
-        $this->basketProducts = $this->basket->BasketProducts;
+    public function refresh()
+    {
+        $this->emit('cart-refresh');
     }
 
     public function render()

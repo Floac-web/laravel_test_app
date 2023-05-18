@@ -11,12 +11,13 @@ class ApiRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
-        if ($this->wantsJson() || $this->ajax()) {
+        // if ($this->wantsJson() || $this->ajax()) {s
             throw new HttpResponseException(response()->error($validator->errors()->first(), 422));
-         }
-
-        throw (new ValidationException($validator))
-                    ->errorBag($this->errorBag)
-                    ->redirectTo($this->getRedirectUrl());
+        // }
+        // else {
+            // throw (new ValidationException($validator))
+            //             ->errorBag($this->errorBag)
+            //             ->redirectTo($this->getRedirectUrl());
+        // }
     }
 }

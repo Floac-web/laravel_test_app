@@ -14,9 +14,17 @@ class CitySearch extends Component
 
     public $showSearched = false;
 
+    protected function rules() {
+        return [
+            'city' => ['required', 'string'],
+        ];
+    }
+
     public function setCity(City $city)
     {
         $this->value = $city['name'];
+
+        $this->showSearched = false;
 
         $this->emitUp('citySeted', $city);
     }

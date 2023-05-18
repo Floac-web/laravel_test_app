@@ -16,6 +16,7 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class OrderController extends Controller
 {
     public function index()
@@ -25,74 +26,11 @@ class OrderController extends Controller
         return view('user.orders.index', compact('orders'));
     }
 
-    public function store(
-        FondyPaymentService $service,
-        City $city,
-        CityWarehouse $cityWarehouse,
-        PaymentRequest $request
-    )
+    public function pay(Order $order, Request $request)
     {
-        DB::beginTransaction();
+        $payUrl = $request->payUrl;
 
-        $paymentType = $request->validated()['payment-type'];
-
-        $currency = Currency::where('locale', app()->getLocale())->select('code')->first();
-
-        if (! isset($currency)) {
-            return redirect()->route('user.basket.index');
-        }
-
-        $basket = auth()->user()->basket()->first();
-
-        $order = auth()->user()->orders()->create([
-            'total' => $basket->total
-        ]);
-
-        $basketProducts = $basket->basketProducts()->get()->toArray();
-
-        $order->orderProducts()->createMany($basketProducts);
-
-        if ($paymentType === 'online') {
-            $url = $service->checkout(
-                $basket->total * 100,
-                $currency->code,
-                $order->id,
-                $city->id,
-                $cityWarehouse->id
-            );
-
-            if ($url) {
-                DB::commit();
-
-                $url->toCheckout();
-            }
-
-            DB::rollBack();
-        }
-
-        if ($paymentType === 'cash') {
-            $order->updateOrCreate([
-                'status' => 'approved',
-            ]);
-
-            $orderPayment = $order->orderPayments()->updateOrCreate([
-                'currency' => $currency->code,
-                'amount' => $basket->total,
-                'status' => 'waiting',
-                'system' => 'cash'
-            ]);
-
-            $orderAddress = $order->orderAddress()->updateOrCreate([
-                'city_id' =>  $city->id,
-                'city_warehouse_id' => $cityWarehouse->id,
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('payment.success', compact('order', 'orderPayment', 'orderAddress'));
-        }
-
-        return redirect()->route('user.basket.index');
+        return view('user.orders.pay', compact('order', 'payUrl'));
     }
 
     public function show(Order $order)

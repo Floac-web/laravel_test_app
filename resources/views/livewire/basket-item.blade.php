@@ -1,4 +1,4 @@
-<div>
+{{-- <div>
     {{ $basketProduct->product->countryPrices()->first()->price }}
      <div id="{{ $basketProduct->id }}">
         <a href="{{ route('products.show', $basketProduct->product) }}">
@@ -14,4 +14,6 @@
         <button wire:click="remove">remove</button>
     </div>
     <hr>
-</div>
+</div> --}}
+
+@include('components.basket.row')

@@ -12,33 +12,32 @@ use Illuminate\Http\Request;
 class PaymentController extends Controller
 {
 
-    public function success(Order $order, OrderPayment $orderPayment, OrderAddress $orderAddress)
+    public function success(Order $order, OrderPayment $orderPayment)
     {
         if ($order->user_id !== auth()->id()) {
             abort(404);
         }
 
-        return view('user.payment.success', compact('orderPayment', 'orderAddress'));
+        return view('user.payment.success', compact('orderPayment', 'order'));
     }
 
     public function response(Request $request, Order $order)
     {
         $result = new \Cloudipsp\Result\Result($request->all(), 'test');
 
-        // if (! $result->isApproved()) {
-            // $order->delete();
+        if (! $result->isApproved()) {
+            $order->status = 'failure';
 
-            // abort(402);
-        // }
+            $order->save();
+
+            return redirect()->route('user.basket.index');
+        }
 
         $data = $result->getData();
-        dd($data);
 
-        $merchantData = (array) json_decode($data['merchant_data']);
+        $order->status = $request->input('order_status');
 
-        $order->updateOrCreate([
-            'status' => $request->input('order_status'),
-        ]);
+        $order->save();
 
         $orderPayment = $order->orderPayments()->updateOrCreate([
             'payment_id' => $request->input('payment_id'),
@@ -48,8 +47,6 @@ class PaymentController extends Controller
             'system' => $request->input('payment_system')
         ]);
 
-        $orderAddress = $order->orderAddress()->updateOrCreate($merchantData);
-
-        return redirect()->route('payment.success', compact('order', 'orderPayment', 'orderAddress'));
+        return redirect()->route('payment.success', compact('order', 'orderPayment'));
     }
 }

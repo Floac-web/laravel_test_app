@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\City;
 use App\Models\CityWarehouse;
 use Illuminate\Support\Facades\Http;
+use Throwable;
 
 class NovaPoshtaService
 {
@@ -32,14 +33,18 @@ class NovaPoshtaService
             ]
         ];
 
-        $response = Http::withBody(json_encode($requestPayload), 'application/json')
-        ->get('https://api.novaposhta.ua/v2.0/json/Address/getCities')->json();
+        try {
+            $response = Http::withBody(json_encode($requestPayload), 'application/json')
+            ->get('https://api.novaposhta.ua/v2.0/json/Address/getCities')->json();
 
-        if (!empty($response['errors'])) {
-            return false;
-        }
+            if (!empty($response['errors'])) {
+                return false;
+            }
 
-        if (empty($response['data'])) {
+            if (empty($response['data'])) {
+                return false;
+            }
+        } catch (Throwable $e) {
             return false;
         }
 
@@ -58,14 +63,18 @@ class NovaPoshtaService
             ]
         ];
 
-        $response = Http::withBody(json_encode($requestPayload), 'application/json')
-        ->get('https://api.novaposhta.ua/v2.0/json/Address/getWarehouses')->json();
+        try {
+            $response = Http::withBody(json_encode($requestPayload), 'application/json')
+            ->get('https://api.novaposhta.ua/v2.0/json/Address/getWarehouses')->json();
 
-        if (!empty($response['errors'])) {
-            return false;
-        }
+            if (!empty($response['errors'])) {
+                return false;
+            }
 
-        if (empty($response['data'])) {
+            if (empty($response['data'])) {
+                return false;
+            }
+        } catch (Throwable $e) {
             return false;
         }
 

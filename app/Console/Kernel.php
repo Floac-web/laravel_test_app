@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('app:cities')->monthly();
         $schedule->command('app:warehouses')->monthly();
+        $schedule->command('app:check-payments')->hourly();
         // $schedule->command('inspire')->hourly();
     }
 

@@ -1,26 +1,36 @@
 <div>
     <div>
         @livewire('user.order.city-search')
-    <div>
-
+        @error('city')
+            <span>{{ $message }}</span>
+        @enderror
     </div>
+
+    <div>
         @if (isset($city))
             @livewire('user.order.warehouses-search', compact('city'))
         @endif
     </div>
 
-    @if (isset($city) && isset($cityWarehouse))
-        <form wire:submit.prevent="order">
-            <div>
-                <input type="text" wire:model='paymentType'>
-                @error('paymentType') <span style="color:red">{{ $message }}</span> @enderror
-                <button>
-                    order
-                </button>
-            </div>
-        </form>
-    @endif
+    <div>
+        @if (isset($city) && isset($warehouse))
+            @include('components.form.select', [
+                'id' => 'paymentType',
+                'label' => 'Payment Type',
+                'model' => 'paymentType',
+                'options' => ['cash', 'online']
+            ])
+
+            <button class="btn btn-success" wire:click.prevent="order">
+                order
+            </button>
+        @endif
+    </div>
+
+
+
 </div>
+
 
 
 

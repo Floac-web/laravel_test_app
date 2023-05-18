@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('product_id')->constrained()->onDelete('cascade');
             $table->string('locale')->default('uk')->index();
+            $table->string('code')->nullable();
             $table->integer('price')->nullable();
             $table->timestamps();
         });

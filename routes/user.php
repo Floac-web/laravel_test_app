@@ -13,7 +13,10 @@ Route::prefix('basket')->name('basket.')->controller(UserBasketController::class
         });
 
 Route::resource('orders', UserOrderController::class, [
-    'only' => ['index', 'show', 'destroy']
+    'only' => ['index', 'show', 'destroy'],
 ]);
+Route::get('orders/pay/{order}', [UserOrderController::class, 'pay'])->name('orders.pay');
 
-Route::middleware('empty.basket')->post('orders/{city}/{cityWarehouse}', [UserOrderController::class, 'store'])->name('orders.store');
+Route::middleware('empty.basket')
+    ->post('orders/{city}/{cityWarehouse}', [UserOrderController::class, 'store'])
+    ->name('orders.store');

@@ -1,21 +1,22 @@
-<div>
-   <label for="city">City</label>
-   <input type="text" id="city" wire:model='value' wire:click="$set('showSearched', 'true')">
 
-   @if ($showSearched)
-        <form wire:submit.prevent="$set('showSearched', false)">
-            <ul>
-                <div>
-                    {{ $value }}
-                </div>
-                @foreach ($cities as $city)
-                <li>
-                    <button  wire:click.stop="setCity({{ $city }})">
-                        {{ $city->name }}
-                    </button>
-                </li>
-                @endforeach
-            </ul>
-        </form>
-    @endif
-</div>
+<div x-data="{ showSearched: false }">
+    @include('components.form.input', [
+        'id' => 'city',
+        'label' => 'City',
+        'model' => 'value',
+        'onFocus' => '$set("showSearched", "true")'
+    ])
+
+    @error('city')
+        <span style="color:red">{{ $message }}
+            {{ $message }}
+        </span>
+    @enderror
+
+    @include('components.form.list', [
+        'show' => $showSearched,
+        'items' => $cities,
+        'name' => 'name',
+        'onClick' => 'setCity'
+    ])
+<div>

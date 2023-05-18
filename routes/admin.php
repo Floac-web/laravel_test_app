@@ -10,14 +10,14 @@ Route::resource('products', AdminProductController::class, [
     'only' => ['index', 'show', 'edit', 'create']
 ]);
 
-Route::prefix('products/{product}')->name('products.')
-->controller(AdminProductController::class)
-->group(function () {
-    Route::get('lang/{lang}/add', 'addLang')->name('lang.add');
-    Route::get('lang/{lang}/update', 'updateLang')->name('lang.update');
-    Route::middleware('has.lang')->get('price/{lang}/add', 'addPrice')->name('price.add');
-    Route::get('price/{lang}/update', 'updatePrice')->name('price.update');
-});
+// Route::prefix('products/{product}')->name('products.')
+// ->controller(AdminProductController::class)
+// ->group(function () {
+//     Route::prefix('photos')->name('photos.')->group(function () {
+//         Route::get('/', 'photos')->name('index');
+//         // Route::get('add', 'storePhoto')->name('store');
+//     });
+// });
 
 Route::resource('categories', AdminCategoryController::class);
 
@@ -28,11 +28,9 @@ Route::prefix('orders')->name('orders.')->group(function () {
     Route::get('users/{user}', [AdminOrderController::class, 'userOrders'])->name('users');
 });
 
-Route::prefix('statistics')->name('statistics.')
-->controller(StatisticController::class)
-->group(function () {
-    Route::get('/orders', 'index')->name('index');
-    Route::get('/edit', 'edit')->name('edit');
-    Route::post('/update', 'update')->name('update');
-    Route::get('/{from}/{to}/show', 'show')->name('show');
+Route::prefix('statistics')->name('statistics.')->controller(StatisticController::class)->group(function () {
+        Route::get('/orders', 'index')->name('index');
+        Route::get('/edit', 'edit')->name('edit');
+        Route::post('/update', 'update')->name('update');
+        Route::get('/{from}/{to}/show', 'show')->name('show');
 });

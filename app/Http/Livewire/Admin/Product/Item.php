@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Admin\Product;
 
 use App\Models\Product;
+use App\Services\BasketService;
 use Livewire\Component;
 
 class Item extends Component
@@ -12,6 +13,11 @@ class Item extends Component
     public function mount(Product $product)
     {
         $this->product = $product;
+    }
+
+    public function addToBusket(BasketService $service)
+    {
+        $service->update($this->product);
     }
 
     public function render()

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 class Product extends Model implements TranslatableContract
 {
     use HasFactory;
@@ -18,6 +21,7 @@ class Product extends Model implements TranslatableContract
     protected $perPage = 5;
 
     protected $fillable = [
+        'id',
         'prices'
     ];
 
@@ -38,32 +42,54 @@ class Product extends Model implements TranslatableContract
         return $this->hasMany(ProductCountryPrice::class);
     }
 
-    public function localPrice($locale)
-    {
-        return $this->countryPrices()->where('locale', $locale);
-    }
 
     public function countryPrice()
     {
-        return $this->countryPrices()->whereLocale(app()->getLocale());
+        return $this->hasOne(ProductCountryPrice::class)->whereLocale(app()->getLocale());
     }
 
     public function defaultPrice()
     {
-        return $this->countryPrices()->whereLocale(config('app.default_locale'));
+        return $this->hasOne(ProductCountryPrice::class)->whereLocale(config('app.default_locale'));
     }
 
-    public function translates()
-    {
-        return $this->hasMany(ProductTranslation::class);
-    }
+    // public function countryPrice()
+    // {
+    //     return $this->countryPrices()->whereLocale(app()->getLocale());
+    // }
+
+    // public function defaultPrice()
+    // {
+    //     return $this->countryPrices()->whereLocale(config('app.default_locale'));
+    // }
 
     public static function getActive()
     {
-        return Product::whereStatus('active')
-            ->whereHas('categories', function ($query) {
-                $query->where('status', 'active');
-            })
-            ->with('activeCategories');
+        return Product::whereStatus('active')->with('activeCategories');
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(ProductPhoto::class)->orderBy('order', 'asc');
+    }
+
+    public function mainPhoto()
+    {
+        return $this->hasOne(ProductPhoto::class)->where('order', 0);
+    }
+
+
+    protected function price(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->countryPrice?->price ?? $this->defaultPrice?->price,
+        );
+    }
+
+    protected function currency(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->countryPrice?->code ?? $this->defaultPrice?->code,
+        );
     }
 }

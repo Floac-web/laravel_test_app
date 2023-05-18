@@ -1,4 +1,4 @@
-<div>
+{{-- <div>
     <div>
         <div>
             ProductId: {{ $product->id }}
@@ -21,4 +21,6 @@
             <button wire:click="addToBusket">add to basket</button>
     </div>
     <hr>
-</div>
+</div> --}}
+
+@include('components.product.teaser')

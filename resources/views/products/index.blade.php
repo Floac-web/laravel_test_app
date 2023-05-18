@@ -2,35 +2,27 @@
 
 @section('content')
 <div>
-    @foreach ($products as $product)
-    {{-- <div>
-        <div>
-            ProductId: {{ $product->id }}
-        </div>
-        <a href="{{ route('products.show', $product) }}">
-        <h4>{{ $product->translates[0]->title }}</h4>
-        </a>
-        <div>
-            @foreach ($product->categories as $category)
-                <div>
-                    <a href="{{ route('categories.show', $category) }}">{{ $category->translates[0]->name }}</a>
-                    {{ $category->status }}
-                </div>
+    <form action="{{ route('products.index') }}" method="GET" class="mb-5">
+        @csrf
+        <div class="d-flex justify-content-between mb-3">
+            @foreach ($categories as $category)
+                @include('components.form.checkbox', [
+                    'id' =>  $category->id,
+                    'name' => "categories[]",
+                    'label' => $category->translateOrDefault(app()->getLocale())->name,
+                    'isChecked' => $selectedCategories && in_array($category->id, $selectedCategories) ? 'checked' : ''
+                ])
             @endforeach
         </div>
-        <p>
-            {{ $product->translates[0]->description }}
-        </p>
-        <strong>{{ $product->countryPrices[0]->price }}</strong>
-        <form action="{{ route('user.basket.update', $product) }}" method="POST">
-            @method('patch')
-            @csrf
-            <button name="quantity" value="1">add to basket</button>
-        </form>
+        <button class="btn btn-success">
+            filter
+        </button>
+    </form>
+    <div class="row row-cols-1-md-3 row-cols-md-3 g-4">
+        @foreach ($products as $product)
+        @livewire('product-item', ['product' => $product])
+        @endforeach
     </div>
-    <hr> --}}
-    @livewire('product-item', ['product' => $product])
-    @endforeach
 </div>
 {{ $products->links() }}
 @endsection

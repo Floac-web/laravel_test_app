@@ -2,66 +2,43 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\BasketProduct;
+use App\Models\Product;
+use App\Services\BasketService;
 use Livewire\Component;
 
 class BasketItem extends Component
 {
-    public $basket;
-
     public $basketProduct;
 
-    public function mount($basketProduct, $basket)
+    protected $listeners = [
+        'cart-refresh' => '$refresh',
+    ];
+
+    public function mount($basketProduct)
     {
         $this->basketProduct = $basketProduct;
-
-        $this->basket = $basket;
     }
 
-    private function updateBasketTotal()
+    public function remove(BasketService $service)
     {
-        $this->basket->total = $this->basket->basketProducts()
-        ->selectRaw('SUM(total) AS basket_total')
-        ->first()->basket_total;
+        $service->remove($this->basketProduct->product);
 
-        $this->basket->save();
+        $this->emitUp('refreshParentComponent');
     }
 
-    public function increment()
+    public function increment(BasketService $service)
     {
-        $this->basketProduct->increment('quantity', 1);
+        $service->updateItem($this->basketProduct, $this->basketProduct->quantity + 1);
 
-        $productPrice = $this->basketProduct->product->defaultPrice()->first()->price;
-
-        $this->basketProduct->total = $productPrice * $this->basketProduct->quantity;
-
-        $this->basketProduct->save();
-
-        $this->updateBasketTotal();
+        $this->emitUp('refreshParentComponent');
     }
 
-    public function decrement()
+    public function decrement(BasketService $service)
     {
-        $this->basketProduct->decrement('quantity', 1);
-
-        if ($this->basketProduct->quantity <= 0) {
-            $this->remove();
+        if ($this->basketProduct->quantity > 1) {
+            $service->updateItem($this->basketProduct, $this->basketProduct->quantity - 1);
         }
-
-        $productPrice = $this->basketProduct->product->defaultPrice()->first()->price;
-
-        $this->basketProduct->total = $productPrice * $this->basketProduct->quantity;
-
-        $this->basketProduct->save();
-
-        $this->updateBasketTotal();
-    }
-
-    public function remove()
-    {
-        $this->basketProduct->delete();
-
-        $this->updateBasketTotal();
-
         $this->emitUp('refreshParentComponent');
     }
 

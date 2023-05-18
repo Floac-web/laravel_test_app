@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @livewire('admin.product.create-form')
+<div class="bg-white p-5 rounded">
+    @livewire('admin.product.form')
+</div>
 @endsection

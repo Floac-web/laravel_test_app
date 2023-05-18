@@ -92,7 +92,7 @@ return [
 
     'default_locale' => 'uk',
 
-    'support_langs' => ['uk_UA', 'en_EN', 'pl_PL'],
+    'support_langs' => ['uk', 'en', 'pl'],
 
     /*
     |--------------------------------------------------------------------------
@@ -204,6 +204,10 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        App\Providers\BasketServiceProvider::class,
+
+        App\Providers\OrderServiceProvider::class,
 
         SSD\Currency\CurrencyServiceProvider::class
 

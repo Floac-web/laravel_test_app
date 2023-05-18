@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    const ADMIN_ROLE = 'admin';
 
     /**
      * The attributes that are mass assignable.
@@ -45,12 +48,19 @@ class User extends Authenticatable
 
     public static function boot()
     {
+        $uuid = Str::uuid()->toString();
+
         parent::boot();
 
-        self::created(function ($model) {
-            Basket::create([
-                'user_id' => $model->id
-            ]);
+        self::creating(function ($model) use ($uuid) {
+            $model->id = $uuid;
+        });
+
+        self::created(function ($model) use ($uuid) {
+            Basket::updateOrCreate(
+                ['session_id' => session('_token')],
+                ['user_id' => $uuid]
+            );
         });
     }
 

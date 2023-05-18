@@ -2,7 +2,6 @@
 
 @section('content')
 <div>
-
     <div>
         <h4>{{ $product->translateOrDefault(app()->getLocale())->title }}</h4>
         <div>
@@ -16,6 +15,5 @@
         <strong>{{ $product->countryPrices[0]->price }}</strong>
     </div>
     <hr>
-
 </div>
 @endsection

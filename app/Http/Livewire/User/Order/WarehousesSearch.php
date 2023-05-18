@@ -22,6 +22,8 @@ class WarehousesSearch extends Component
     {
         $this->value = $warehouse['address'];
 
+        $this->showSearched = false;
+
         $this->emitUp('warehouseSeted', $warehouse);
     }
 

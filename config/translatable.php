@@ -40,7 +40,7 @@ return [
     | and never fallback to the translator one.
     |
     */
-    'locale' => 'uk',
+    // 'locale' => 'en',
 
     /*
     |--------------------------------------------------------------------------
@@ -81,7 +81,7 @@ return [
     | is used first. So "es" will be checked before "es_MX".
     |
     */
-    'fallback_locale' => 'uk',
+    'fallback_locale' => 'en',
 
     /*
     |--------------------------------------------------------------------------

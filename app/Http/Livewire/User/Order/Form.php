@@ -6,7 +6,9 @@ use App\Console\Commands\WareHouses;
 use App\Models\City;
 use App\Models\CityWarehouse;
 use App\Models\Currency;
+use App\Models\Order;
 use App\Services\FondyPaymentService;
+use App\Services\OrderService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -15,9 +17,9 @@ class Form extends Component
 {
     public City $city;
 
-    public CityWarehouse $cityWarehouse;
+    public CityWarehouse $warehouse;
 
-    public $paymentType;
+    public $paymentType = 'online';
 
     protected $listeners = [
         'citySeted' => 'setCity',
@@ -30,9 +32,9 @@ class Form extends Component
         ];
     }
 
-    public function setWarehouse(CityWarehouse $cityWarehouse)
+    public function setWarehouse(CityWarehouse $warehouse)
     {
-        $this->cityWarehouse = $cityWarehouse;
+        $this->warehouse = $warehouse;
     }
 
     public function setCity(City $city)
@@ -40,94 +42,40 @@ class Form extends Component
         $this->city = $city;
     }
 
-    public function order()
+    public function order(OrderService $service)
     {
+        $currency = Currency::where('locale', app()->getLocale())->select('code')->first();
+
+        if (! isset($currency)) {
+            return redirect()->route('user.basket.index');
+        }
+
         $data = $this->validate();
+
+        $order = $service->baseOrder($this->city->id, $this->warehouse->id);
 
         switch ($data['paymentType']) {
             case 'online':
-                    $this->fondyOrder();
+                    $this->onlineOrder($currency->code, $order, $service);
                 break;
             case 'cash':
-                    $this->cashOrder();
+                    $this->cashOrder($currency->code, $order, $service);
                 break;
         }
     }
 
-    public function fondyOrder()
+    public function onlineOrder($currencyCode, $order, OrderService $service)
     {
-        DB::beginTransaction();
+        $payUrl = $service->onlinePay($currencyCode, $order);
 
-        $service = new FondyPaymentService;
-
-        $currency = Currency::where('locale', app()->getLocale())->select('code')->first();
-
-        if (! isset($currency)) {
-            return redirect()->route('user.basket.index');
-        }
-
-        $basket = auth()->user()->basket()->first();
-
-        $order = auth()->user()->orders()->create([
-            'total' => $basket->total
-        ]);
-
-        $basketProducts = $basket->basketProducts()->get()->toArray();
-
-        $order->orderProducts()->createMany($basketProducts);
-
-        $url = $service->checkout(
-            $basket->total * 100,
-            $currency->code,
-            $order->id,
-            $this->city->id,
-            $this->cityWarehouse->id
-        );
-
-        if ($url) {
-            DB::commit();
-
-            return redirect($url->getData()["checkout_url"]);
-        }
-
-        DB::rollBack();
+        return redirect()->route('user.orders.pay', compact('order', 'payUrl'));
     }
 
-    public function cashOrder()
+    public function cashOrder($currencyCode, $order, OrderService $service)
     {
-        $currency = Currency::where('locale', app()->getLocale())->select('code')->first();
+        $orderPayment = $service->cashPay($currencyCode, $order);
 
-        if (! isset($currency)) {
-            return redirect()->route('user.basket.index');
-        }
-
-        $basket = auth()->user()->basket()->first();
-
-        $order = auth()->user()->orders()->create([
-            'total' => $basket->total
-        ]);
-
-        $basketProducts = $basket->basketProducts()->get()->toArray();
-
-        $order->orderProducts()->createMany($basketProducts);
-
-        $order->updateOrCreate([
-            'status' => 'approved',
-        ]);
-
-        $orderPayment = $order->orderPayments()->updateOrCreate([
-            'currency' => $currency->code,
-            'amount' => $basket->total,
-            'status' => 'waiting',
-            'system' => 'cash'
-        ]);
-
-        $orderAddress = $order->orderAddress()->updateOrCreate([
-            'city_id' =>  $this->city->id,
-            'city_warehouse_id' => $this->cityWarehouse->id,
-        ]);
-
-        return redirect()->route('payment.success', compact('order', 'orderPayment', 'orderAddress'));
+        return redirect()->route('payment.success', compact('order', 'orderPayment'));
     }
 
     public function render()

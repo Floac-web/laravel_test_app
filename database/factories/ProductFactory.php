@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Category;
 use App\Models\CategoryProduct;
+use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductCountryPrice;
 use App\Models\User;
@@ -40,6 +41,7 @@ class ProductFactory extends Factory
                 ProductCountryPrice::create([
                     'product_id' => $product->id,
                     'locale' => mb_substr($lang, 0, 2),
+                    'code' => Currency::whereLocale(mb_substr($lang, 0, 2))->first()->code,
                     'price' => fake()->numberBetween(100,150)
                 ]);
             }

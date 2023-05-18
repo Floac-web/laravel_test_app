@@ -4,6 +4,8 @@
 // use App\Http\Controllers\Admin\ProductController as AdminProductController;
 // use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 // use App\Http\Controllers\Admin\StatisticController;
+
+use App\Http\Controllers\User\BasketController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\CurrencyController;
 use App\Http\Controllers\Web\NovaPoshtaController;
@@ -51,6 +53,10 @@ Route::prefix('currencies')
         Route::get('/', 'index')->name('show');
 
         Route::post('update', 'update')->name('update');
+});
+
+Route::prefix('basket')->name('basket.')->controller(BasketController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
 });
 
 
