@@ -46,24 +46,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public static function boot()
-    {
-        $uuid = Str::uuid()->toString();
-
-        parent::boot();
-
-        self::creating(function ($model) use ($uuid) {
-            $model->id = $uuid;
-        });
-
-        self::created(function ($model) use ($uuid) {
-            Basket::updateOrCreate(
-                ['session_id' => session('_token')],
-                ['user_id' => $uuid]
-            );
-        });
-    }
-
     public function basket()
     {
         return $this->hasOne(Basket::class)->with('basketProducts');
@@ -72,5 +54,10 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function order($order_id)
+    {
+        return $this->hasOne(Order::class)->whereId($order_id);
     }
 }

@@ -14,11 +14,15 @@ class OrderPayResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'currency' => $this->currency,
-            'amount' => $this->amount,
-            'status' => $this->status,
-            'system' => $this->system
-        ];
+        if($this->currency) {
+            return [
+                'currency' => $this->currency,
+                'amount' => $this->amount,
+                'status' => $this->status,
+                'system' => $this->system
+            ];
+        }
+
+        return ['url' => $this];
     }
 }

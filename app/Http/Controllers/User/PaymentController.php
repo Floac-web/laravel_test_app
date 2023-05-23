@@ -35,7 +35,8 @@ class PaymentController extends Controller
 
         $data = $result->getData();
 
-        $order->status = $request->input('order_status');
+        dd($request->input('order_status'));
+        // $order->status =
 
         $order->save();
 

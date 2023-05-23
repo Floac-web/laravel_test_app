@@ -14,11 +14,11 @@
     </td>
     <td>
         <a class="btn btn-warning" href="{{ route('admin.products.edit', $product) }}">
-            <i class="bi bi-pencil"></i>
+            {{-- <i class="bi bi-pencil"></i> --}}e
         </a>
         <button
             type='button' class="btn btn-danger" wire:click="$emit('openModal', 'admin.product.delete-modal', {{ json_encode(['product' => $product]) }})">
-            <i class="bi bi-trash"></i>
+            {{-- <i class="bi bi-trash"></i> --}}d
         </button>
     </td>
 </tr>

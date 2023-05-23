@@ -26,9 +26,7 @@ class OrderController extends Controller
             abort(404);
         }
 
-        return response([
-            'order' => new OrderResource($order)
-        ]);
+        return new OrderResource($order);
     }
 
     public function store(PaymentWayRequest $request, CityWarehouse $cityWarehouse)
@@ -47,16 +45,13 @@ class OrderController extends Controller
 
         switch ($data['paymentType']) {
             case 'online':
-                    $orderPay = order()->onlinePay($currency->code, $order);
+                    $order['orderPay'] = order()->onlinePay($currency->code, $order);
                 break;
             case 'cash':
-                    $orderPay = order()->cashPay($currency->code, $order);
+                    $order['orderPay'] = order()->cashPay($currency->code, $order);
                 break;
         }
 
-        return response([
-            'order' => new OrderResource($order),
-            'orderPay' => $data['paymentType'] === 'online' ? $orderPay : new OrderPayResource($orderPay)
-        ]);
+        return new OrderResource($order);
     }
 }

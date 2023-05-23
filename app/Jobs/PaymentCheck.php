@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Models\Order;
 use App\Services\FondyPaymentService;
 use Illuminate\Bus\Queueable;
@@ -28,15 +30,12 @@ class PaymentCheck implements ShouldQueue
      */
     public function handle(FondyPaymentService $service): void
     {
-        Order::whereStatus('in progres')->chunk(100, function ($orders) use ($service) {
-            foreach($orders as $order) {
-                $payment = $service->paymentStatus($order->id);
-                if ($payment['order_status'] === 'expired') {
-                    $order->update([
-                        'status' => 'failure'
-                    ]);
-                };
-            }
-        });
+        $orders = Order::waitingOnlinePay()->get();
+
+        foreach ($orders as $order) {
+            $pay_status = $service->getStatus($order->id);
+
+            order()->switchStatus($order, $pay_status);
+        }
     }
 }

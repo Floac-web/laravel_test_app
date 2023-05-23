@@ -19,6 +19,7 @@ class OrderResource extends JsonResource
             'api' => $this->api,
             'status' => $this->status,
             'user_id' => $this->user_id,
+            'orderPay' => new OrderPayResource($this['orderPay']),
             'orderProducts' => OrderProductResource::collection($this->orderProducts)
         ];
     }

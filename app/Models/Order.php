@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\OrderPaySystemEnum;
+use App\Enums\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -18,6 +20,10 @@ class Order extends Model
         'total'
     ];
 
+    protected $casts = [
+        'status' => OrderStatusEnum::class
+    ];
+
     public $incrementing = false;
 
     public static function boot()
@@ -26,6 +32,13 @@ class Order extends Model
 
         self::creating(function ($model) {
             $model->id = Str::uuid()->toString();
+        });
+    }
+
+    public function scopeWaitingOnlinePay($query)
+    {
+        $query->whereStatus(OrderStatusEnum::Wait)->whereHas('orderPayments', function ($query) {
+            $query->whereSystem(OrderPaySystemEnum::Online);
         });
     }
 
@@ -42,6 +55,11 @@ class Order extends Model
     public function orderPayments()
     {
         return $this->hasMany(OrderPayment::class);
+    }
+
+    public function orderPayment()
+    {
+        return $this->hasOne(OrderPayment::class);
     }
 
     public function orderAddress()

@@ -52,7 +52,7 @@ class Form extends Component
 
         $data = $this->validate();
 
-        $order = $service->baseOrder($this->city->id, $this->warehouse->id);
+        $order = $service->baseOrder($this->warehouse);
 
         switch ($data['paymentType']) {
             case 'online':

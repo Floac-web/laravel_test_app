@@ -7,25 +7,27 @@ use App\Models\BasketProduct;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class BasketService
 {
-    public function getToken(): Basket
+    public function getToken()
     {
+        $cart_token = session()->get('cart_token');
+
         if (auth()->check()) {
-            return auth()->user()->basket()->first();
+            return auth()->user()->basket()->firstOrCreate();
         }
 
-        session()->get('cart_token');
-
-
-        session()->put('cart_token', 'uniq token');
+        if (!$cart_token) {
+            session()->put('cart_token', Str::uuid()->toString());
+            $cart_token = session()->get('cart_token');
+        }
 
         return Basket::firstOrCreate([
-            'session_id' => session('_token')
+            'session_id' => $cart_token
         ]);
     }
-
 
     public function update(Product $product, int $count = 1): void
     {
@@ -69,7 +71,6 @@ class BasketService
     {
         return $this->getToken()->basketProduct($product->id)->first();
     }
-
 
     public function sum(): float
     {
